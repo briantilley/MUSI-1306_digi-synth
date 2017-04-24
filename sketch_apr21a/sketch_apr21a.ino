@@ -9,93 +9,25 @@ typedef struct _song
 	uint16_t wholeNoteMillis;
 } song;
 
-uint16_t pirateNotes[] = {
-	NOTE_A3, 8,
-	NOTE_C4, 8,
-
-	NOTE_D4, 4,
-	NOTE_D4, 4,
-	NOTE_D4, 8,
-	NOTE_E4, 8,
-
-	NOTE_F4, 4,
-	NOTE_F4, 4,
-	NOTE_F4, 8,
-	NOTE_G4, 8,
-
-	NOTE_E4, 4,
-	NOTE_E4, 4,
-	NOTE_D4, 8,
-	NOTE_C4, 8,
-
-	NOTE_C4, 8,
-	NOTE_D4, 4,
+uint16_t marioNotes[] = {
+	NOTE_E5, 8,
+	NOTE_E5, 8,
 	0, 8,
-	NOTE_A3, 8,
-	NOTE_C4, 8,
-
-	NOTE_D4, 4,
-	NOTE_D4, 4,
-	NOTE_D4, 8,
-	NOTE_E4, 8,
-
-	NOTE_F4, 4,
-	NOTE_F4, 4,
-	NOTE_F4, 8,
-	NOTE_G4, 8,
-
-	NOTE_E4, 4,
-	NOTE_E4, 4,
-	NOTE_D4, 8,
-	NOTE_C4, 8,
-
-	NOTE_D4, 2,
-	NOTE_A3, 8,
-	NOTE_C4, 8,
-
-	NOTE_D4, 4,
-	NOTE_D4, 4,
-	NOTE_D4, 8,
-	NOTE_F4, 8,
-
-	NOTE_G4, 4,
-	NOTE_G4, 4,
-	NOTE_G4, 8,
-	NOTE_A4, 8,
-
-	NOTE_AS4, 4,
-	NOTE_AS4, 4,
-	NOTE_A4, 8,
-	NOTE_G4, 8,
-
-	NOTE_A4, 8,
-	NOTE_D4, 4,
+	NOTE_E5, 8,
 	0, 8,
-	NOTE_D4, 8,
-	NOTE_E4, 8,
-
-	NOTE_F4, 4,
-	NOTE_F4, 4,
-	NOTE_G4, 4,
-
-	NOTE_A4, 8,
-	NOTE_D4, 4,
+	NOTE_C5, 8,
+	NOTE_E5, 8,
 	0, 8,
-	NOTE_D4, 8,
-	NOTE_F4, 8,
 
-	NOTE_E4, 4,
-	NOTE_E4, 4,
-	NOTE_F4, 8,
-	NOTE_D4, 8,
-
-	NOTE_E4, 2
+	NOTE_G5, 4,
+	0, 4,
+	NOTE_G4, 4
 };
 
-song pirate = {
-	pirateNotes,
-	118,
-	1200	
+song mario = {
+	marioNotes,
+	22,
+	1154
 };
 
 void playSong(song s) {
@@ -133,8 +65,6 @@ void setup() {
 	P2DIR = 0x00;
 	P2REN = 0x07;
 	P2OUT = 0x07;
-
-	playSong(pirate);
 }
 
 void loop() {
@@ -151,7 +81,11 @@ void loop() {
 	// play the valve-augmented root of the harmonic series
 	if(harmonic != prev_harmonic || fundamentalTone != prev_fundamentalTone) {
 		analogFrequency(fundamentalTone * harmonic);
-		analogWrite(AUDIO_PIN, (harmonic & 0x02) ? 127 : 0); // "0" harmonic is silent (no buttons pressed)
+		analogWrite(AUDIO_PIN, (harmonic & 0x02) ? 127 : 0); // "0" and root harmonic kept silent
 	}
-}
 
+	baseFundamentalIdx = analogRead(P1_7) * (SIZE_FUNDAMENTALS - 8) / (1 << 10);
+
+	if((P1IN & 0x03) == 0 && (P2IN & 0x07) == 0)
+		playSong(mario);
+}
