@@ -12,9 +12,6 @@ uint16_t fundamentals[] = { NOTE_F2, NOTE_FS2, NOTE_G2, NOTE_GS2, NOTE_A2,
 #define SIZE_FUNDAMENTALS 22
 uint8_t baseFundamentalIdx = 0;
 
-// for fun
-long f_ts;
-
 void setup() {
 	// harmonic selection
 	P1DIR = 0x00;
@@ -25,8 +22,6 @@ void setup() {
 	P2DIR = 0x00;
 	P2REN = 0x07;
 	P2OUT = 0x07;
-
-	f_ts = millis();
 }
 
 void loop() {
@@ -44,13 +39,5 @@ void loop() {
 	if(harmonic != prev_harmonic || fundamentalTone != prev_fundamentalTone) {
 		analogFrequency(fundamentalTone * harmonic);
 		analogWrite(AUDIO_PIN, (harmonic & 0x02) ? 127 : 0); // "0" harmonic is silent (no buttons pressed)
-	}
-
-	if(millis() - 250 > f_ts) {
-		f_ts = millis();
-		baseFundamentalIdx++;
-		if(baseFundamentalIdx > SIZE_FUNDAMENTALS - 8) {
-			baseFundamentalIdx = 0;
-		}
 	}
 }
