@@ -27,7 +27,7 @@ uint16_t marioNotes[] = {
 song mario = {
 	marioNotes,
 	22,
-	1154
+	1154,
 };
 
 void playSong(song s) {
@@ -47,13 +47,10 @@ void playSong(song s) {
 
 uint16_t fundamentalTone, prev_fundamentalTone;
 uint8_t harmonic, prev_harmonic;
+uint8_t pulseWidth = 0;
 
-uint16_t fundamentals[] = { NOTE_F2, NOTE_FS2, NOTE_G2, NOTE_GS2, NOTE_A2,
-	NOTE_AS2, NOTE_B2, NOTE_C3, NOTE_CS3, NOTE_D3, NOTE_DS3, NOTE_E3,
-	NOTE_F3, NOTE_FS3, NOTE_G3, NOTE_GS3, NOTE_A3, NOTE_AS3, NOTE_B3,
-	NOTE_C4, NOTE_CS4, NOTE_D4 };
-#define SIZE_FUNDAMENTALS 22
-uint8_t baseFundamentalIdx = 7;
+uint16_t fundamentals[] = { NOTE_C3, NOTE_CS3, NOTE_D3, NOTE_DS3,
+	NOTE_E3, NOTE_F3, NOTE_FS3, NOTE_G3 };
 
 void setup() {
 	// harmonic selection
@@ -76,7 +73,7 @@ void loop() {
 
 	// artificial valving - augment by a certain number of half steps
 	prev_fundamentalTone = fundamentalTone;
-	fundamentalTone = fundamentals[baseFundamentalIdx + (~P2IN & 0x07)];
+	fundamentalTone = fundamentals[~P2IN & 0x07];
 
 	// play the valve-augmented root of the harmonic series
 	if(harmonic != prev_harmonic || fundamentalTone != prev_fundamentalTone) {
@@ -84,8 +81,7 @@ void loop() {
 		analogWrite(AUDIO_PIN, (harmonic & 0x02) ? 127 : 0); // "0" and root harmonic kept silent
 	}
 
-	baseFundamentalIdx = analogRead(P1_7) * (SIZE_FUNDAMENTALS - 8) / (1 << 10);
-
+	// es for fun
 	if((P1IN & 0x03) == 0 && (P2IN & 0x07) == 0)
 		playSong(mario);
 }
