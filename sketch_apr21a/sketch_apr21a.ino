@@ -2,6 +2,213 @@
 
 #define AUDIO_PIN P1_6
 
+typedef struct _song
+{
+	uint16_t* notes;
+	uint16_t size;
+	uint16_t wholeNoteMillis;
+} song;
+
+uint16_t pirateNotes[] = {
+	NOTE_A3, 8,
+	NOTE_C4, 8,
+
+	NOTE_D4, 4,
+	NOTE_D4, 4,
+	NOTE_D4, 8,
+	NOTE_E4, 8,
+
+	NOTE_F4, 4,
+	NOTE_F4, 4,
+	NOTE_F4, 8,
+	NOTE_G4, 8,
+
+	NOTE_E4, 4,
+	NOTE_E4, 4,
+	NOTE_D4, 8,
+	NOTE_C4, 8,
+
+	NOTE_C4, 8,
+	NOTE_D4, 4,
+	0, 8,
+	NOTE_A3, 8,
+	NOTE_C4, 8,
+
+	NOTE_D4, 4,
+	NOTE_D4, 4,
+	NOTE_D4, 8,
+	NOTE_E4, 8,
+
+	NOTE_F4, 4,
+	NOTE_F4, 4,
+	NOTE_F4, 8,
+	NOTE_G4, 8,
+
+	NOTE_E4, 4,
+	NOTE_E4, 4,
+	NOTE_D4, 8,
+	NOTE_C4, 8,
+
+	NOTE_D4, 2,
+	NOTE_A3, 8,
+	NOTE_C4, 8,
+
+	NOTE_D4, 4,
+	NOTE_D4, 4,
+	NOTE_D4, 8,
+	NOTE_F4, 8,
+
+	NOTE_G4, 4,
+	NOTE_G4, 4,
+	NOTE_G4, 8,
+	NOTE_A4, 8,
+
+	NOTE_AS4, 4,
+	NOTE_AS4, 4,
+	NOTE_A4, 8,
+	NOTE_G4, 8,
+
+	NOTE_A4, 8,
+	NOTE_D4, 4,
+	0, 8,
+	NOTE_D4, 8,
+	NOTE_E4, 8,
+
+	NOTE_F4, 4,
+	NOTE_F4, 4,
+	NOTE_G4, 4,
+
+	NOTE_A4, 8,
+	NOTE_D4, 4,
+	0, 8,
+	NOTE_D4, 8,
+	NOTE_F4, 8,
+
+	NOTE_E4, 4,
+	NOTE_E4, 4,
+	NOTE_F4, 8,
+	NOTE_D4, 8,
+
+	NOTE_E4, 2,
+	NOTE_A4, 8,
+	NOTE_C5, 8,
+
+	NOTE_D5, 4,
+	NOTE_D5, 4,
+	NOTE_D5, 8,
+	NOTE_E5, 8,
+
+	NOTE_F5, 4,
+	NOTE_F5, 4,
+	NOTE_F5, 8,
+	NOTE_G5, 8,
+
+	NOTE_E5, 4,
+	NOTE_E5, 4,
+	NOTE_D5, 8,
+	NOTE_C5, 8,
+
+	NOTE_C5, 8,
+	NOTE_D5, 4,
+	0, 8,
+	NOTE_A4, 8,
+	NOTE_C5, 8,
+
+	NOTE_D5, 4,
+	NOTE_D5, 4,
+	NOTE_D5, 8,
+	NOTE_E5, 8,
+
+	NOTE_F5, 4,
+	NOTE_F5, 4,
+	NOTE_F5, 8,
+	NOTE_G5, 8,
+
+	NOTE_E5, 4,
+	NOTE_E5, 4,
+	NOTE_D5, 8,
+	NOTE_C5, 8,
+
+	NOTE_D5, 2,
+	NOTE_A4, 8,
+	NOTE_C5, 8,
+
+	NOTE_D5, 4,
+	NOTE_D5, 4,
+	NOTE_D5, 8,
+	NOTE_F5, 8,
+
+	NOTE_G5, 4,
+	NOTE_G5, 4,
+	NOTE_G5, 8,
+	NOTE_A5, 8,
+
+	NOTE_AS5, 4,
+	NOTE_AS5, 4,
+	NOTE_A5, 8,
+	NOTE_G5, 8,
+
+	NOTE_A5, 8,
+	NOTE_D5, 4,
+	0, 8,
+	NOTE_D5, 8,
+	NOTE_E5, 8,
+
+	NOTE_F5, 4,
+	NOTE_F5, 4,
+	NOTE_G5, 4,
+
+	NOTE_A5, 8,
+	NOTE_C5, 4,
+	0, 8,
+	NOTE_C5, 8,
+	NOTE_E5, 8,
+
+	NOTE_E5, 4,
+	NOTE_E5, 4,
+	NOTE_D5, 8,
+	NOTE_C5, 8,
+
+	NOTE_D5, 4,
+	NOTE_D5, 4,
+	NOTE_E5, 4,
+
+	NOTE_F5, 4,
+	NOTE_F5, 8,
+	NOTE_F5, 8,
+	NOTE_G5, 4,
+	
+	NOTE_A5, 8,
+	NOTE_F5, 4,
+	0, 8,
+	NOTE_F5, 8,
+	NOTE_D5, 8,
+
+	NOTE_A4, 4,
+	0, 2
+};
+
+song pirate = {
+	pirateNotes,
+	118,
+	1200	
+};
+
+void playSong(song s) {
+	for(int i = 0; i < s.size; i += 2) {
+		if(s.notes[i] != 0) {
+			analogFrequency(s.notes[i]);
+			analogWrite(AUDIO_PIN, 127);
+		}
+		else
+			analogWrite(AUDIO_PIN, 0);
+		delay(s.wholeNoteMillis / s.notes[i + 1] - 10);
+		analogWrite(AUDIO_PIN, 0);
+		delay(10);
+	}
+	analogWrite(AUDIO_PIN, 0);
+}
+
 uint16_t fundamentalTone, prev_fundamentalTone;
 uint8_t harmonic, prev_harmonic;
 
@@ -10,7 +217,7 @@ uint16_t fundamentals[] = { NOTE_F2, NOTE_FS2, NOTE_G2, NOTE_GS2, NOTE_A2,
 	NOTE_F3, NOTE_FS3, NOTE_G3, NOTE_GS3, NOTE_A3, NOTE_AS3, NOTE_B3,
 	NOTE_C4, NOTE_CS4, NOTE_D4 };
 #define SIZE_FUNDAMENTALS 22
-uint8_t baseFundamentalIdx = 0;
+uint8_t baseFundamentalIdx = 7;
 
 // for fun
 long f_ts;
@@ -26,7 +233,11 @@ void setup() {
 	P2REN = 0x07;
 	P2OUT = 0x07;
 
+<<<<<<< Updated upstream
 	f_ts = millis();
+=======
+	playSong(pirate);
+>>>>>>> Stashed changes
 }
 
 void loop() {
@@ -54,3 +265,4 @@ void loop() {
 		}
 	}
 }
+
